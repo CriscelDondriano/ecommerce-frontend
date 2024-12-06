@@ -5,6 +5,7 @@ import ProductManagement from './components/ProductManagement';
 import ProductDetails from './components2/ProductDetails';
 import Userpage from './components2/Userpage';
 import Cart from './components2/Cart'; 
+import CheckoutPage from './components2/CheckoutPage';
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
             <Route path="/store" element={<Userpage />} />
             <Route path="/products/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} /> {/* Add this line */}
+            <Route path="/checkout" element={<CheckoutPage />} />
         </Routes>
     );
 }

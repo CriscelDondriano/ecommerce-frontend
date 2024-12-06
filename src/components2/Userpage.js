@@ -1,4 +1,3 @@
-// src/components2/UserPage.js
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Badge, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -76,6 +75,10 @@ const UserPage = () => {
         }
     };
 
+    const handleCheckout = () => {
+        navigate('/checkout'); // Redirect to checkout page
+    };
+
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
@@ -140,40 +143,46 @@ const UserPage = () => {
                         <Col key={product.id} md={4} className="mb-4">
                             <Card>
                                 <Link to={`/products/${product.id}`}>
-                                    <Card.Img variant="top" src={product.image} /> {/* Assuming product has an image */}
+                                    <Card.Img variant="top" src={product.image} />
                                 </Link>
                                 <Card.Body>
-                                    <Card.Title>
-                                        <Link to={`/products/${product.id}`}>{product.name}</Link>
-                                    </Card.Title>
-                                    <Card.Text>₱{product.price}</Card.Text>
-                                    <Card.Text>
-                                        <strong>Available:</strong> {product.quantity} pieces
-                                    </Card.Text>
-                                    {/* Quantity Selector */}
-                                    <div className="d-flex align-items-center mb-3">
-                                        <Button
-                                            variant="outline-secondary"
-                                            size="sm"
-                                            onClick={() => handleQuantityChange(product.id, 'decrement')}
-                                            disabled={quantities[product.id] === 1}
-                                        >
-                                            -
-                                        </Button>
-                                        <span className="mx-3">{quantities[product.id]}</span>
-                                        <Button
-                                            variant="outline-secondary"
-                                            size="sm"
-                                            onClick={() => handleQuantityChange(product.id, 'increment')}
-                                            disabled={quantities[product.id] >= product.quantity}
-                                        >
-                                            +
-                                        </Button>
-                                    </div>
-                                    <Button variant="primary" onClick={() => handleAddToCart(product)}>
-                                        Add to Cart
-                                    </Button>
-                                </Card.Body>
+    <Card.Title>
+        <Link to={`/products/${product.id}`}>{product.name}</Link>
+    </Card.Title>
+    <Card.Text>₱{product.price}</Card.Text>
+    <Card.Text>
+        <strong>Available:</strong> {product.quantity} pieces
+    </Card.Text>
+    {/* Quantity Selector */}
+    <div className="d-flex align-items-center mb-3">
+        <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleQuantityChange(product.id, 'decrement')}
+            disabled={quantities[product.id] === 1}
+        >
+            -
+        </Button>
+        <span className="mx-3">{quantities[product.id]}</span>
+        <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleQuantityChange(product.id, 'increment')}
+            disabled={quantities[product.id] >= product.quantity}
+        >
+            +
+        </Button>
+    </div>
+    {/* Button Group */}
+    <div className="d-flex flex-column">
+        <Button variant="primary" onClick={() => handleAddToCart(product)} className="mb-2">
+            Add to Cart
+        </Button>
+        <Button variant="success" onClick={handleCheckout}>
+            Buy Now
+        </Button>
+    </div>
+</Card.Body>
                             </Card>
                         </Col>
                     ))
