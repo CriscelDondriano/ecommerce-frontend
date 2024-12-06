@@ -86,9 +86,12 @@ const UserPage = () => {
         }
     };
 
-    const handleCheckout = () => {
-        navigate('/checkout'); // Redirect to checkout page
+    const handleCheckout = (product) => {
+        const selectedCartItems = [{ ...product, quantity: quantities[product.id] }];
+        navigate('/checkout', { state: { selectedCartItems } });
     };
+    
+    
 
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -189,9 +192,10 @@ const UserPage = () => {
         <Button variant="primary" onClick={() => handleAddToCart(product)} className="mb-2">
             Add to Cart
         </Button>
-        <Button variant="success" onClick={handleCheckout}>
-            Buy Now
-        </Button>
+        <Button variant="success" onClick={() => handleCheckout(product)}>
+    Buy Now
+</Button>
+
     </div>
 </Card.Body>
                             </Card>
