@@ -1,114 +1,142 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table, Button, Form } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Table, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
-    const [selectedItems, setSelectedItems] = useState([]); // Track selected items
-    const [quantities, setQuantities] = useState({}); // Track quantity of each item
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch cart items from local storage or API
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCartItems(storedCart);
+        const groupedCart = storedCart.reduce((acc, item) => {
+            const existingItem = acc.find(i => i.id === item.id);
+            if (existingItem) {
+                existingItem.quantity += item.quantity;
+            } else {
+                acc.push({ ...item });
+            }
+            return acc;
+        }, []);
+        
+        setCartItems(groupedCart);
     }, []);
 
-    const handleRemoveFromCart = (productId) => {
-        const updatedCart = cartItems.filter(item => item.id !== productId);
+    const handleRemoveFromCart = (id) => {
+        const updatedCart = cartItems.filter(item => item.id !== id);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
         setCartItems(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart)); // Update local storage
+        selectedItems.delete(id);
+        setSelectedItems(new Set(selectedItems));
     };
 
-    const handleSelectItem = (productId) => {
-        setSelectedItems(prevSelectedItems =>
-            prevSelectedItems.includes(productId)
-                ? prevSelectedItems.filter(id => id !== productId) // Deselect
-                : [...prevSelectedItems, productId] // Select
-        );
+    const handleQuantityChange = (id, newQuantity) => {
+        if (newQuantity < 1) return;
+
+        const updatedCart = cartItems.map(item => {
+            if (item.id === id) {
+                return { ...item, quantity: newQuantity };
+            }
+            return item;
+        });
+
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        setCartItems(updatedCart);
     };
 
-    const handleQuantityChange = (productId, quantity) => {
-        if (quantity < 1) return; // Prevent quantity from going below 1
-        setQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [productId]: quantity
-        }));
+    const handleCheckout = () => {
+        const remainingCartItems = cartItems.filter(item => !selectedItems.has(item.id));
+        const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
+
+        localStorage.setItem('cart', JSON.stringify(remainingCartItems));
+
+        // Pass selected items to checkout
+        navigate('/checkout', { state: { selectedCartItems } });
     };
 
-    const calculateTotalPrice = () => {
-        return cartItems.filter(item => selectedItems.includes(item.id))
-                        .reduce((total, item) => {
-                            const quantity = quantities[item.id] || 1; // Default quantity is 1
-                            return total + item.price * quantity;
-                        }, 0);
+    const handleContinueShopping = () => {
+        navigate('/store');
     };
 
-    const calculateTotalItems = () => {
-        return selectedItems.length;
+    const handleSelectItem = (id) => {
+        const updatedSelectedItems = new Set(selectedItems);
+        if (updatedSelectedItems.has(id)) {
+            updatedSelectedItems.delete(id);
+        } else {
+            updatedSelectedItems.add(id);
+        }
+        setSelectedItems(updatedSelectedItems);
     };
+
+    const totalItems = Array.from(selectedItems).reduce((acc, id) => {
+        const item = cartItems.find(item => item.id === id);
+        return acc + (item ? item.quantity : 0);
+    }, 0);
+
+    const totalAmount = Array.from(selectedItems).reduce((acc, id) => {
+        const item = cartItems.find(item => item.id === id);
+        return acc + (item ? item.price * item.quantity : 0);
+    }, 0);
 
     return (
-        <Container>
+        <div>
             <h1>Your Cart</h1>
-            {cartItems.length === 0 ? (
-                <p>Your cart is empty.</p>
-            ) : (
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Select</th>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Actions</th>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {cartItems.map(item => (
+                        <tr key={item.id}>
+                            <td>
+                                <Form.Check
+                                    type="checkbox"
+                                    checked={selectedItems.has(item.id)}
+                                    onChange={() => handleSelectItem(item.id)}
+                                />
+                            </td>
+                            <td>{item.name}</td>
+                            <td>₱{item.price}</td>
+                            <td>
+                                <Form.Control
+                                    type="number"
+                                    value={item.quantity}
+                                    min="1"
+                                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+                                />
+                            </td>
+                            <td>
+                                <Button variant="danger" onClick={() => handleRemoveFromCart(item.id)}>
+                                    Remove
+                                </Button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {cartItems.map(item => (
-                            <tr key={item.id}>
-                                <td>
-                                    <Form.Check
-                                        type="checkbox"
-                                        checked={selectedItems.includes(item.id)}
-                                        onChange={() => handleSelectItem(item.id)} // Toggle selection
-                                    />
-                                </td>
-                                <td>{item.name}</td>
-                                <td>₱{item.price}</td>
-                                <td>
-                                    <Form.Control
-                                        type="number"
-                                        value={quantities[item.id] || 1} // Default to 1 if not set
-                                        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                                        min="1"
-                                    />
-                                </td>
-                                <td>
-                                    <Button variant="danger" onClick={() => handleRemoveFromCart(item.id)}>
-                                        Remove
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            )}
-
-            <div className="d-flex justify-content-between">
-                <Link to="/store">
-                    <Button variant="primary">Continue Shopping</Button>
-                </Link>
-
+                    ))}
+                </tbody>
+            </Table>
+            <div className="d-flex justify-content-between mt-4">
                 <div>
-                    <h4>Total Items: {calculateTotalItems()}</h4> {/* Total selected items */}
-                    <h4>Total: ₱{calculateTotalPrice()}</h4> {/* Total price of selected items */}
-                    <Link to="/checkout">
-                        <Button variant="success">Checkout</Button>
-                    </Link>
+                    <h5>Total Items: {totalItems}</h5>
+                    <h5>Total Amount: ₱{totalAmount.toFixed(2)}</h5>
+                </div>
+                <div>
+                    <Button variant="success" onClick={handleCheckout}>
+                        Checkout
+                    </Button>
+                    <Button variant="primary" onClick={handleContinueShopping}>
+                        Continue Shopping
+                        </Button>
                 </div>
             </div>
-        </Container>
+        </div>
     );
 };
 
 export default Cart;
+                   

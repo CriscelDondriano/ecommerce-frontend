@@ -45,13 +45,24 @@ const UserPage = () => {
 
     const handleAddToCart = (product) => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        const quantity = quantities[product.id];
-        storedCart.push({ ...product, quantity }); // Add product with selected quantity
+        const existingProductIndex = storedCart.findIndex(item => item.id === product.id);
+
+        // Get the quantity to add
+        const quantityToAdd = quantities[product.id] || 1; // Default to 1 if not specified
+
+        if (existingProductIndex > -1) {
+            // If the product already exists in the cart, update the quantity
+            storedCart[existingProductIndex].quantity += quantityToAdd; // Add the new quantity
+        } else {
+            // If the product does not exist, add it to the cart
+            storedCart.push({ ...product, quantity: quantityToAdd }); // Add product with selected quantity
+        }
+
         localStorage.setItem('cart', JSON.stringify(storedCart)); // Save to local storage
         alert('Product added to cart successfully!'); // Simple alert for feedback
         updateCartCount(); // Update cart count after adding a product
     };
-
+    
     const handleQuantityChange = (productId, action) => {
         setQuantities((prevQuantities) => {
             const currentQuantity = prevQuantities[productId];
