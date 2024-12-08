@@ -17,7 +17,9 @@ const UserPage = () => {
     const [modalMessage, setModalMessage] = useState(''); // Message to show in the modal
     const [showConfirmation, setShowConfirmation] = useState(false); // State for the confirmation modal
     const [productToAdd, setProductToAdd] = useState(null); // State for the product being added
+    const [showLogoutModal, setShowLogoutModal] = useState(false); // State for logout confirmation modal
     const navigate = useNavigate();
+    
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -46,6 +48,27 @@ const UserPage = () => {
         setCartCount(storedCart.length);
     };
 
+    const logOut = () => {
+        setShowLogoutModal(true); 
+    };
+
+    const confirmLogout = () => {
+    localStorage.removeItem('user-info');
+
+    navigate('/login', { replace: true });
+
+    window.history.pushState(null, '', window.location.href);
+    window.onpopstate = function () {
+        window.history.go(1);
+    };
+
+    setShowLogoutModal(false);
+};
+
+const cancelLogout = () => {
+    setShowLogoutModal(false);
+};
+    
     const handleAddToCart = (product) => {
         setProductToAdd(product); // Set the product to be added
         setShowConfirmation(true); // Show confirmation modal
@@ -119,6 +142,25 @@ const UserPage = () => {
     return (
         <Container>
             <h1 className="text-center mt-4">Welcome to Our Store</h1>
+            <Button variant="outline-dark" onClick={logOut} className="mb-4">
+                Logout
+            </Button>
+
+            <Modal show={showLogoutModal} onHide={cancelLogout}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Logout</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to logout?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={cancelLogout}>
+                        Cancel
+                    </Button>
+                    <Button variant="success" onClick={confirmLogout}>
+                        Logout
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
             <div className="d-flex justify-content-end mb-4">
                 <Button variant="dark" onClick={() => navigate('/cart')} className="position-relative">
                     <FontAwesomeIcon icon={faCartShopping} />
