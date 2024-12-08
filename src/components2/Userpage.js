@@ -23,11 +23,9 @@ const UserPage = () => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/products');
-                const response = await axios.get('http://localhost:8000/api/products');
                 setProducts(response.data);
                 const initialQuantities = {};
                 response.data.forEach((product) => {
-                    initialQuantities[product.id] = 1;
                     initialQuantities[product.id] = 1;
                 });
                 setQuantities(initialQuantities);
@@ -41,17 +39,16 @@ const UserPage = () => {
 
         fetchProducts();
         updateCartCount();
-        updateCartCount();
     }, []);
 
+    const handleLogout = () => {
+        localStorage.removeItem('authToken'); // Clear user session (e.g., token or user data)
+        navigate('/login'); // Redirect to login page
+    };
+    
     const updateCartCount = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartCount(storedCart.length);
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('user-info'); // Clear user session
-        navigate('/'); // Redirect to login page
     };
 
     const handleAddToCart = (product) => {
@@ -124,14 +121,7 @@ const UserPage = () => {
 
     return (
         <Container>
-            {/* Logout Button */}
-            <div className="d-flex justify-content-between align-items-center mt-4">
-                <h1>Welcome to Our Store</h1>
-                <Button variant="dark" onClick={handleLogout}>
-                    Logout
-                </Button>
-            </div>
-
+            <h1 className="text-center mt-4">Welcome to Our Store</h1>
             <div className="d-flex justify-content-end mb-4">
                 <Button variant="dark" onClick={() => navigate('/cart')} className="position-relative">
                     <FontAwesomeIcon icon={faCartShopping} />
@@ -141,6 +131,10 @@ const UserPage = () => {
                         </Badge>
                     )}
                 </Button>
+                <Button variant="dark" onClick={handleLogout} className="ms-2">
+                Logout
+            </Button>
+
             </div>
 
             <Form className="mb-4">
