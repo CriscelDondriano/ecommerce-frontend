@@ -51,7 +51,7 @@ const CheckoutPage = () => {
         );
         localStorage.setItem('cart', JSON.stringify(updatedCartItems));
 
-        navigate('/store'); // Redirecting to the store page
+        navigate('/receipt', { state: { orderSummary } });
     };
 
     return (

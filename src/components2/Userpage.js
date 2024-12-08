@@ -91,8 +91,6 @@ const UserPage = () => {
         navigate('/checkout', { state: { selectedCartItems } });
     };
     
-    
-
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
