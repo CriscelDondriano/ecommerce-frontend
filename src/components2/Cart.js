@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Form, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -188,10 +190,11 @@ const Cart = () => {
                                     </td>
                                     <td>
                                         <Button
-                                            variant="danger"
+                                            className="w-100"
+                                            variant="dark"
                                             onClick={() => handleRemoveFromCart(item.id)}
                                         >
-                                            Remove
+                                            <FontAwesomeIcon icon={faTrashCan} />
                                         </Button>
                                     </td>
                                 </tr>
