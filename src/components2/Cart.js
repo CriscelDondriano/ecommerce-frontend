@@ -14,11 +14,13 @@ const Cart = () => {
         const fetchCartItems = async () => {
             try {
                 const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-
+                setCartItems(storedCart);  // Keep this line intact
+                setLoading(false);
+    
                 // Fetch product availability from the server
-                const response = await axios.get('http://localhost:8000/api/products'); // Update the API endpoint
+                const response = await axios.get('http://localhost:8000/api/products');
                 const products = response.data;
-
+    
                 // Merge availability into cart items
                 const updatedCart = storedCart.map((item) => {
                     const product = products.find((p) => p.id === item.id);
@@ -26,21 +28,20 @@ const Cart = () => {
                         return {
                             ...item,
                             availableQuantity: product.quantity, // Update available stock
-                            price: product.price, // Update price (in case it changes)
+                            price: product.price, // Update price (if it changes)
                         };
                     }
                     return { ...item, availableQuantity: 0 }; // Product no longer available
                 });
-
+    
                 setCartItems(updatedCart);
                 setLoading(false);
             } catch (err) {
                 setError('Failed to fetch product data. Please try again later.');
-                console.error(err);
                 setLoading(false);
             }
         };
-
+    
         fetchCartItems();
     }, []);
 
@@ -71,17 +72,15 @@ const Cart = () => {
     };
 
     const handleCheckout = () => {
-        const remainingCartItems = cartItems.filter((item) => !selectedItems.has(item.id));
+        // Get the selected items (if any)
         const selectedCartItems = cartItems.filter((item) => selectedItems.has(item.id));
-
-        localStorage.setItem('cart', JSON.stringify(remainingCartItems));
-
-        // Pass selected items to checkout
-        navigate('/checkout', { state: { selectedCartItems } });
+    
+        // Pass selectedCartItems to the Checkout page with the source of navigation
+        navigate('/checkout', { state: { selectedCartItems, from: 'viewCart' } });
     };
 
     const handleContinueShopping = () => {
-        navigate('/store');
+        navigate('/store', { state: { from: 'viewCart' } });
     };
 
     const handleSelectItem = (id) => {
@@ -203,7 +202,7 @@ const Cart = () => {
                             <h5>Total Amount: ₱{totalAmount.toFixed(2)}</h5>
                         </div>
                         <div>
-                            <Button variant="success" onClick={handleCheckout}>
+                            <Button variant="success" onClick={handleCheckout} disabled={selectedItems.size === 0}>
                                 Checkout
                             </Button>
                             <Button variant="primary" onClick={handleContinueShopping}>

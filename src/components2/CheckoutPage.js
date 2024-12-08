@@ -17,6 +17,9 @@ const CheckoutPage = () => {
         street: '',
     });
 
+    // Determine if we are on the checkout page or view cart page
+    const { from } = location.state || {};
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -49,8 +52,18 @@ const CheckoutPage = () => {
         localStorage.setItem('cart', JSON.stringify(updatedCartItems));
 
         navigate('/receipt', { state: { orderSummary } });
-
     };
+
+    // Handle cancel button
+    const handleCancel = () => {
+        if (from === 'viewCart') {
+            // Navigate back to the cart without modifying the cart state
+            navigate('/cart'); 
+        } else {
+            navigate('/store'); // Navigate back to the store page
+        }
+    };
+    
 
     return (
         <Container className="mt-5">
@@ -162,6 +175,9 @@ const CheckoutPage = () => {
                                 </Form.Group>
                                 <Button variant="primary" type="submit" className="mt-3">
                                     Place Order
+                                </Button>
+                                <Button variant="secondary" onClick={handleCancel} className="mt-3 ms-2">
+                                    Cancel
                                 </Button>
                             </Form>
                         </Card.Body>

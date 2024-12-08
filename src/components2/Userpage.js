@@ -88,8 +88,9 @@ const UserPage = () => {
 
     const handleCheckout = (product) => {
         const selectedCartItems = [{ ...product, quantity: quantities[product.id] }];
-        navigate('/checkout', { state: { selectedCartItems } });
+        navigate('/checkout', { state: { selectedCartItems, from: 'store' } }); // Pass 'from' as store
     };
+    
     
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
