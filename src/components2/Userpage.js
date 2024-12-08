@@ -20,6 +20,13 @@ const UserPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            navigate("/", { replace: true }); // Redirect to login page if not authenticated
+        }
+    }, [navigate]); // We add navigate to dependency array to ensure it is re-run if the navigate function changes.
+    
+    useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/products');
@@ -43,8 +50,10 @@ const UserPage = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('authToken'); // Clear user session
-        navigate('/'); // Redirect to login page
+        navigate("/", { replace: true }); // Redirect to login page
     };
+    
+    
     
     const updateCartCount = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
