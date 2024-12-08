@@ -165,7 +165,7 @@ const Cart = () => {
                                         />
                                     </td>
                                     <td>{item.name}</td>
-                                    <td>₱{item.price}</td>
+                                    <td>₱{(item.price * item.quantity).toFixed(2)}</td> {/* Updated price based on quantity */}
                                     <td>
                                         {/* Quantity Selector with Buttons */}
                                         <div className="d-flex align-items-center">
@@ -201,6 +201,7 @@ const Cart = () => {
                             ))}
                         </tbody>
                     </Table>
+
                     <div className="d-flex justify-content-between mt-4">
                         <div>
                             <h5>Total Items: {totalItems}</h5>
