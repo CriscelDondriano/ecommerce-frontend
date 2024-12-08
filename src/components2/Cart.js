@@ -45,6 +45,16 @@ const Cart = () => {
     };
 
     const handleCheckout = () => {
+        if (cartItems.length === 0) {
+            alert("Your cart is empty. Please add items to the cart before checking out.");
+            return;
+        }
+
+        if (selectedItems.size === 0) {
+            alert("Please select at least one item to proceed to checkout.");
+            return;
+        }
+
         const remainingCartItems = cartItems.filter(item => !selectedItems.has(item.id));
         const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
 
@@ -131,7 +141,7 @@ const Cart = () => {
                     </Button>
                     <Button variant="primary" onClick={handleContinueShopping}>
                         Continue Shopping
-                        </Button>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -139,4 +149,3 @@ const Cart = () => {
 };
 
 export default Cart;
-                   

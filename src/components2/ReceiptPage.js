@@ -1,10 +1,11 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Card, Button } from 'react-bootstrap';
+import { Container, Card, Button, Modal } from 'react-bootstrap';
 
 const ReceiptPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [showConfirmPrompt, setShowConfirmPrompt] = React.useState(false);
 
     // Fetch orderSummary from navigation state
     const orderSummary = location.state?.orderSummary;
@@ -33,6 +34,15 @@ const ReceiptPage = () => {
         const itemTotal = (item.price || 0) * (item.quantity || 1); // Default quantity to 1
         return total + itemTotal;
     }, 0);
+
+    const handleConfirm = () => {
+        setShowConfirmPrompt(true);
+    };
+
+    const handleConfirmClose = () => {
+        setShowConfirmPrompt(false);
+        navigate('/store');
+    };
 
     return (
         <Container className="mt-5">
@@ -74,15 +84,28 @@ const ReceiptPage = () => {
                         Total: ₱{totalPrice.toFixed(2)}
                     </h6>
                     <div className="d-flex justify-content-between mt-3">
-                        <Button
-                            variant="success"
-                            onClick={() => navigate('/store')}
-                        >
+                        <Button variant="success" onClick={handleConfirm}>
                             Confirm
                         </Button>
+                        <Button variant="danger" onClick={() => navigate('/checkout', { state: { selectedCartItems: orderSummary.cartItems, shippingDetails: orderSummary.shippingDetails, paymentMethod: orderSummary.paymentMethod } })}>
+                        Cancel
+                        </Button>         
                     </div>
                 </Card.Body>
             </Card>
+
+            {/* Confirmation Modal */}
+            <Modal show={showConfirmPrompt} onHide={() => setShowConfirmPrompt(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Order Confirmed</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Your order has been successfully placed!</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleConfirmClose}>
+                        Continue
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

@@ -52,6 +52,7 @@ const CheckoutPage = () => {
         localStorage.setItem('cart', JSON.stringify(updatedCartItems));
 
         navigate('/receipt', { state: { orderSummary } });
+
     };
 
     return (
