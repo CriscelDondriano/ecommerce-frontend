@@ -173,10 +173,10 @@ const CheckoutPage = () => {
                                         <option value="cod">Cash on Delivery</option>
                                     </Form.Control>
                                 </Form.Group>
-                                <Button variant="primary" type="submit" className="mt-3">
+                                <Button variant="dark" type="submit" className="mt-3">
                                     Place Order
                                 </Button>
-                                <Button variant="secondary" onClick={handleCancel} className="mt-3 ms-2">
+                                <Button variant="outline-dark" onClick={handleCancel} className="mt-3 ms-2">
                                     Cancel
                                 </Button>
                             </Form>

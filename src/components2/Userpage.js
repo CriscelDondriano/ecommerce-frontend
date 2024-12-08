@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Badge, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Form, Modal, Nav } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faMagnifyingGlass, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const UserPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [cartCount, setCartCount] = useState(0); // State to track the number of items in the cart
-    const [searchQuery, setSearchQuery] = useState(''); // State for search input
-    const [selectedCategories, setSelectedCategories] = useState([]); // State for selected categories
-    const [quantities, setQuantities] = useState({}); // State for tracking quantities per product
-    const navigate = useNavigate(); // Hook for navigation
+    const [cartCount, setCartCount] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [quantities, setQuantities] = useState({});
+    const [showModal, setShowModal] = useState(false); // State for showing the modal
+    const [modalMessage, setModalMessage] = useState(''); // Message to show in the modal
+    const [showConfirmation, setShowConfirmation] = useState(false); // State for the confirmation modal
+    const [productToAdd, setProductToAdd] = useState(null); // State for the product being added
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/products'); // Adjust the API endpoint as needed
+                const response = await axios.get('http://localhost:8000/api/products');
                 setProducts(response.data);
-                // Initialize quantities for each product
                 const initialQuantities = {};
                 response.data.forEach((product) => {
-                    initialQuantities[product.id] = 1; // Default quantity is 1
+                    initialQuantities[product.id] = 1;
                 });
                 setQuantities(initialQuantities);
             } catch (err) {
@@ -35,34 +38,38 @@ const UserPage = () => {
         };
 
         fetchProducts();
-        updateCartCount(); // Update cart count on component mount
+        updateCartCount();
     }, []);
 
     const updateCartCount = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCartCount(storedCart.length); // Set the cart count based on local storage
+        setCartCount(storedCart.length);
     };
 
     const handleAddToCart = (product) => {
-        const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existingProductIndex = storedCart.findIndex(item => item.id === product.id);
+        setProductToAdd(product); // Set the product to be added
+        setShowConfirmation(true); // Show confirmation modal
+    };
 
-        // Get the quantity to add
-        const quantityToAdd = quantities[product.id] || 1; // Default to 1 if not specified
+    const confirmAddToCart = () => {
+        const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existingProductIndex = storedCart.findIndex(item => item.id === productToAdd.id);
+
+        const quantityToAdd = quantities[productToAdd.id] || 1;
 
         if (existingProductIndex > -1) {
-            // If the product already exists in the cart, update the quantity
-            storedCart[existingProductIndex].quantity += quantityToAdd; // Add the new quantity
+            storedCart[existingProductIndex].quantity += quantityToAdd;
         } else {
-            // If the product does not exist, add it to the cart
-            storedCart.push({ ...product, quantity: quantityToAdd }); // Add product with selected quantity
+            storedCart.push({ ...productToAdd, quantity: quantityToAdd });
         }
 
-        localStorage.setItem('cart', JSON.stringify(storedCart)); // Save to local storage
-        alert('Product added to cart successfully!'); // Simple alert for feedback
-        updateCartCount(); // Update cart count after adding a product
+        localStorage.setItem('cart', JSON.stringify(storedCart));
+        setModalMessage('Product added to cart successfully!');
+        setShowModal(true);
+        setShowConfirmation(false);
+        updateCartCount();
     };
-    
+
     const handleQuantityChange = (productId, action) => {
         setQuantities((prevQuantities) => {
             const currentQuantity = prevQuantities[productId];
@@ -88,10 +95,9 @@ const UserPage = () => {
 
     const handleCheckout = (product) => {
         const selectedCartItems = [{ ...product, quantity: quantities[product.id] }];
-        navigate('/checkout', { state: { selectedCartItems, from: 'store' } }); // Pass 'from' as store
+        navigate('/checkout', { state: { selectedCartItems } });
     };
-    
-    
+
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
@@ -106,16 +112,14 @@ const UserPage = () => {
         return <p style={{ color: 'red' }}>{error}</p>;
     }
 
-    // Assuming categories are predefined
     const categories = ['Mobile', 'TV & AV', 'Laptop', 'Home Appliances', 'Accessories'];
 
     return (
         <Container>
-            <h1 className="text-center mt-4">Welcome to Our Store</h1> {/* Centered Welcome Message */}
-            <h1 className="mt-4">Product List</h1>
+            <h1 className="text-center mt-4">Welcome to Our Store</h1>
             <div className="d-flex justify-content-end mb-4">
-                <Button variant="primary" onClick={() => navigate('/cart')} className="position-relative">
-                    <FontAwesomeIcon icon={faShoppingCart} />
+                <Button variant="dark" onClick={() => navigate('/cart')} className="position-relative">
+                    <FontAwesomeIcon icon={faCartShopping} />
                     {cartCount > 0 && (
                         <Badge pill bg="danger" style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
                             {cartCount}
@@ -124,79 +128,107 @@ const UserPage = () => {
                 </Button>
             </div>
 
-            {/* Search Bar */}
             <Form className="mb-4">
-                <Form.Control
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                />
+                <div style={{ position: 'relative' }}>
+                    {/* Input Field */}
+                    <Form.Control
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }} 
+                    />
+                    
+                    {/* Search Icon */}
+                    <FontAwesomeIcon
+                        icon={faMagnifyingGlass}
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '10px',
+                            transform: 'translateY(-50%)',
+                            color: 'gray',
+                        }}
+                    />
+
+                    {/* Clear Text Button */}
+                    {searchQuery && (
+                        <FontAwesomeIcon
+                            icon={faTimesCircle}
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                right: '10px',
+                                transform: 'translateY(-50%)',
+                                color: 'gray',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => setSearchQuery('')} 
+                        />
+                    )}
+                </div>
             </Form>
 
-            {/* Category Filters - Horizontal Checkboxes */}
             <div className="mb-4">
-                <Row className="d-flex justify-content-start" style={{ flexWrap: 'nowrap' }}>
-                    {categories.map((category) => (
-                        <Col key={category} xs="auto" className="mb-2">
-                            <Form.Check
-                                type="checkbox"
-                                label={category}
-                                checked={selectedCategories.includes(category)}
-                                onChange={() => handleCategoryChange(category)}
-                            />
-                        </Col>
-                    ))}
-                </Row>
-            </div>
+    <Row className="d-flex justify-content-start" style={{ flexWrap: 'nowrap' }}>
+        {categories.map((category) => (
+            <Col key={category} xs="auto" className="mb-2">
+                <Form.Check
+                    type="checkbox"
+                    label={category}
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                    className="custom-checkbox" // Apply the custom styling class
+                />
+            </Col>
+        ))}
+    </Row>
+</div>
+
 
             <Row>
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                         <Col key={product.id} md={4} className="mb-4">
-                            <Card>
-                                <Link to={`/products/${product.id}`}>
-                                    <Card.Img variant="top" src={product.image} />
-                                </Link>
+                            <Card className="product-card">
                                 <Card.Body>
-    <Card.Title>
-        <Link to={`/products/${product.id}`}>{product.name}</Link>
-    </Card.Title>
-    <Card.Text>₱{product.price}</Card.Text>
-    <Card.Text>
-        <strong>Available:</strong> {product.quantity} pieces
-    </Card.Text>
-    {/* Quantity Selector */}
-    <div className="d-flex align-items-center mb-3">
-        <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={() => handleQuantityChange(product.id, 'decrement')}
-            disabled={quantities[product.id] === 1}
-        >
-            -
-        </Button>
-        <span className="mx-3">{quantities[product.id]}</span>
-        <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={() => handleQuantityChange(product.id, 'increment')}
-            disabled={quantities[product.id] >= product.quantity}
-        >
-            +
-        </Button>
-    </div>
-    {/* Button Group */}
-    <div className="d-flex flex-column">
-        <Button variant="primary" onClick={() => handleAddToCart(product)} className="mb-2">
-            Add to Cart
-        </Button>
-        <Button variant="success" onClick={() => handleCheckout(product)}>
-    Buy Now
-</Button>
-
-    </div>
-</Card.Body>
+                                    <Card.Title>
+                                    <Nav.Link as={Link} to={`/products/${product.id}`} className="product-link">
+                                        {product.name}
+                                    </Nav.Link>
+                                    </Card.Title>
+                                    <Card.Text>₱{product.price}</Card.Text>
+                                    <Card.Text>
+                                        <strong>Available:</strong> {product.quantity} pieces
+                                    </Card.Text>
+                                    <div className="d-flex align-items-center mb-3">
+                                        <Button
+                                            variant="outline-secondary"
+                                            size="sm"
+                                            onClick={() => handleQuantityChange(product.id, 'decrement')}
+                                            disabled={quantities[product.id] === 1}
+                                        >
+                                            -
+                                        </Button>
+                                        <span className="mx-3">{quantities[product.id]}</span>
+                                        <Button
+                                            variant="outline-secondary"
+                                            size="sm"
+                                            onClick={() => handleQuantityChange(product.id, 'increment')}
+                                            disabled={quantities[product.id] >= product.quantity}
+                                        >
+                                            +
+                                        </Button>
+                                    </div>
+                                    <div className="d-flex flex-column">
+                                        <Button variant="outline-dark" onClick={() => handleAddToCart(product)} className="mb-2">
+                                            Add to Cart
+                                        </Button>
+                                        <Button variant="dark" onClick={() => handleCheckout(product)}>
+                                            Buy Now
+                                        </Button>
+                                    </div>
+                                </Card.Body>
                             </Card>
                         </Col>
                     ))
@@ -206,6 +238,35 @@ const UserPage = () => {
                     </Col>
                 )}
             </Row>
+
+            {/* Confirmation Modal */}
+            <Modal show={showConfirmation} onHide={() => setShowConfirmation(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Add to Cart</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to add this product to the cart?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-dark" onClick={() => setShowConfirmation(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="dark" onClick={confirmAddToCart}>
+                        Yes, Add to Cart
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Success Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="dark" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

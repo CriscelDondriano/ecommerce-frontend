@@ -125,8 +125,8 @@ const Cart = () => {
             <h1>Your Cart</h1>
             {cartItems.length === 0 ? (
                 <div>
-                    <Alert variant="info">Your cart is empty. Start adding items!</Alert>
-                    <Button variant="primary" onClick={handleContinueShopping}>
+                    <Alert variant="dark">Your cart is empty. Start adding items!</Alert>
+                    <Button variant="dark" onClick={handleContinueShopping}>
                         Continue Shopping
                     </Button>
                 </div>
@@ -138,6 +138,7 @@ const Cart = () => {
                             label="Select All"
                             checked={selectedItems.size === cartItems.length}
                             onChange={handleSelectAll}
+                            className="custom-checkbox"
                         />
                     </div>
                     <Table striped bordered hover>
@@ -158,6 +159,7 @@ const Cart = () => {
                                             type="checkbox"
                                             checked={selectedItems.has(item.id)}
                                             onChange={() => handleSelectItem(item.id)}
+                                            className="custom-checkbox"
                                         />
                                     </td>
                                     <td>{item.name}</td>
@@ -202,10 +204,10 @@ const Cart = () => {
                             <h5>Total Amount: ₱{totalAmount.toFixed(2)}</h5>
                         </div>
                         <div>
-                            <Button variant="success" onClick={handleCheckout} disabled={selectedItems.size === 0}>
+                            <Button variant="dark" onClick={handleCheckout} disabled={selectedItems.size === 0}>
                                 Checkout
                             </Button>
-                            <Button variant="primary" onClick={handleContinueShopping}>
+                            <Button variant="outline-dark" onClick={handleContinueShopping} className=" ms-2">
                                 Continue Shopping
                             </Button>
                         </div>
