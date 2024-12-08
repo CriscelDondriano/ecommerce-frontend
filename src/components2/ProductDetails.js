@@ -36,28 +36,28 @@ const ProductDetails = () => {
   }
 
   return (
-<Container className="d-flex justify-content-center align-items-center mt-4">
-  <Card style={{ width: '24rem', textAlign: 'center' }} className="p-3">
-    <Card.Body>
-      <Card.Title className="mb-3">{product.name}</Card.Title>
-      <Card.Text>
-        <strong>Description:</strong> {product.description}
-      </Card.Text>
-      <Card.Text>
-        <strong>Available:</strong> {product.quantity} pieces
-      </Card.Text>
-      <Card.Text>
-        <strong>Category:</strong> {product.category}
-      </Card.Text>
-      <Card.Text>
-        <strong>Price: ₱{product.price}</strong>
-      </Card.Text>
-    </Card.Body>
-    <Link to="/store">
-      <Button variant="dark" className="mt-3 w-100">Back</Button>
-    </Link>
-  </Card>
-</Container>
+    <Container className="d-flex justify-content-center align-items-center mt-4">
+      <Card style={{ width: '24rem', textAlign: 'center' }} className="p-3">
+        <Card.Body>
+          <Card.Title className="mb-3">{product.name}</Card.Title>
+          <Card.Text>
+            <strong>Description:</strong> {product.description}
+          </Card.Text>
+          <Card.Text>
+            <strong>Available:</strong> {product.quantity} pieces
+          </Card.Text>
+          <Card.Text>
+            <strong>Category:</strong> {product.category}
+          </Card.Text>
+          <Card.Text>
+            <strong>Price: ₱{product.price}</strong>
+          </Card.Text>
+        </Card.Body>
+        <Link to="/store">
+          <Button variant="dark" className="mt-3 w-100">Back</Button>
+        </Link>
+      </Card>
+    </Container>
 
   );
 };
