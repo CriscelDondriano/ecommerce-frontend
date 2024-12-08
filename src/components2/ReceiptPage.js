@@ -84,10 +84,10 @@ const ReceiptPage = () => {
                         Total: ₱{totalPrice.toFixed(2)}
                     </h6>
                     <div className="d-flex justify-content-between mt-3">
-                        <Button variant="success" onClick={handleConfirm}>
+                        <Button variant="dark" onClick={handleConfirm}>
                             Confirm
                         </Button>
-                        <Button variant="danger" onClick={() => navigate('/checkout', { state: { selectedCartItems: orderSummary.cartItems, shippingDetails: orderSummary.shippingDetails, paymentMethod: orderSummary.paymentMethod } })}>
+                        <Button variant="outline-dark" onClick={() => navigate('/checkout', { state: { selectedCartItems: orderSummary.cartItems, shippingDetails: orderSummary.shippingDetails, paymentMethod: orderSummary.paymentMethod } })}>
                         Cancel
                         </Button>         
                     </div>
@@ -101,7 +101,7 @@ const ReceiptPage = () => {
                 </Modal.Header>
                 <Modal.Body>Your order has been successfully placed!</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleConfirmClose}>
+                    <Button variant="dark" onClick={handleConfirmClose}>
                         Continue
                     </Button>
                 </Modal.Footer>
