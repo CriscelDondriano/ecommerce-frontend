@@ -41,9 +41,6 @@ const CheckoutPage = () => {
             cartItems: selectedCartItems, // Use only the selected items
         };
 
-        console.log('Order Summary:', orderSummary); // For debugging
-        alert('Order placed successfully!');
-
         // Clear only the selected items from the cart
         const remainingCartItems = JSON.parse(localStorage.getItem('cart')) || [];
         const updatedCartItems = remainingCartItems.filter(
