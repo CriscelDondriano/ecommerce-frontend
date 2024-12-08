@@ -50,10 +50,13 @@ const UserPage = () => {
 
     const logOut = () => {
         setShowLogoutModal(true); 
+    
+        
     };
 
     const confirmLogout = () => {
     localStorage.removeItem('user-info');
+    
 
     navigate('/login', { replace: true });
 
@@ -142,9 +145,6 @@ const cancelLogout = () => {
     return (
         <Container>
             <h1 className="text-center mt-4">Welcome to Our Store</h1>
-            <Button variant="outline-dark" onClick={logOut} className="mb-4">
-                Logout
-            </Button>
 
             <Modal show={showLogoutModal} onHide={cancelLogout}>
                 <Modal.Header closeButton>
@@ -170,6 +170,9 @@ const cancelLogout = () => {
                         </Badge>
                     )}
                 </Button>
+                <Button variant="dark" onClick={logOut} className="ms-2">
+                Logout
+            </Button>
                 
             </div>
 
