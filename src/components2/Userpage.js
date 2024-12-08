@@ -42,8 +42,8 @@ const UserPage = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('authToken'); // Clear user session (e.g., token or user data)
-        navigate('/login'); // Redirect to login page
+        localStorage.removeItem('authToken'); // Clear user session
+        navigate('/'); // Redirect to login page
     };
     
     const updateCartCount = () => {
