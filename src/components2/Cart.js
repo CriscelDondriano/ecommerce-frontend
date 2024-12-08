@@ -16,26 +16,24 @@ const Cart = () => {
         const fetchCartItems = async () => {
             try {
                 const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-                setCartItems(storedCart);  // Keep this line intact
+                setCartItems(storedCart);
                 setLoading(false);
-    
-                // Fetch product availability from the server
+
                 const response = await axios.get('http://localhost:8000/api/products');
                 const products = response.data;
-    
-                // Merge availability into cart items
+
                 const updatedCart = storedCart.map((item) => {
                     const product = products.find((p) => p.id === item.id);
                     if (product) {
                         return {
                             ...item,
-                            availableQuantity: product.quantity, // Update available stock
-                            price: product.price, // Update price (if it changes)
+                            availableQuantity: product.quantity,
+                            price: product.price,
                         };
                     }
-                    return { ...item, availableQuantity: 0 }; // Product no longer available
+                    return { ...item, availableQuantity: 0 };
                 });
-    
+
                 setCartItems(updatedCart);
                 setLoading(false);
             } catch (err) {
@@ -43,7 +41,7 @@ const Cart = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchCartItems();
     }, []);
 
@@ -52,21 +50,21 @@ const Cart = () => {
             if (item.id === id) {
                 const newQuantity =
                     action === 'increment'
-                        ? Math.min(item.quantity + 1, item.availableQuantity) // Limit by available stock
-                        : Math.max(item.quantity - 1, 1); // Minimum quantity is 1
+                        ? Math.min(item.quantity + 1, item.availableQuantity)
+                        : Math.max(item.quantity - 1, 1);
                 return { ...item, quantity: newQuantity };
             }
             return item;
         });
 
         setCartItems(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart)); // Update local storage
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
     };
 
     const handleRemoveFromCart = (id) => {
         const updatedCart = cartItems.filter((item) => item.id !== id);
         setCartItems(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart)); // Update local storage
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
 
         const updatedSelectedItems = new Set(selectedItems);
         updatedSelectedItems.delete(id);
@@ -74,10 +72,7 @@ const Cart = () => {
     };
 
     const handleCheckout = () => {
-        // Get the selected items (if any)
         const selectedCartItems = cartItems.filter((item) => selectedItems.has(item.id));
-    
-        // Pass selectedCartItems to the Checkout page with the source of navigation
         navigate('/checkout', { state: { selectedCartItems, from: 'viewCart' } });
     };
 
@@ -150,6 +145,7 @@ const Cart = () => {
                                 <th>Product</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
+                                <th>Total Price</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -167,7 +163,6 @@ const Cart = () => {
                                     <td>{item.name}</td>
                                     <td>₱{item.price}</td>
                                     <td>
-                                        {/* Quantity Selector with Buttons */}
                                         <div className="d-flex align-items-center">
                                             <Button
                                                 variant="outline-secondary"
@@ -188,6 +183,7 @@ const Cart = () => {
                                             </Button>
                                         </div>
                                     </td>
+                                    <td>₱{(item.price * item.quantity).toFixed(2)}</td>
                                     <td>
                                         <Button
                                             className="w-100"
@@ -201,20 +197,19 @@ const Cart = () => {
                             ))}
                         </tbody>
                     </Table>
-
                     <div className="d-flex justify-content-between mt-4"> 
                         <div>
                             <h6>Total Items: {totalItems}</h6>
                             <h6>Grand Total: ₱{totalAmount.toFixed(2)}</h6>
                         </div>
                         <div>
-                        <div style={{ marginTop: '20px' }}> 
-                            <Button variant="dark" onClick={handleCheckout} disabled={selectedItems.size === 0}>
-                                Checkout
-                            </Button>
-                            <Button variant="outline-dark" onClick={handleContinueShopping} className=" ms-2">
-                                Continue Shopping
-                            </Button>
+                            <div style={{ marginTop: '20px' }}> 
+                                <Button variant="dark" onClick={handleCheckout} disabled={selectedItems.size === 0}>
+                                    Checkout
+                                </Button>
+                                <Button variant="outline-dark" onClick={handleContinueShopping} className="ms-2">
+                                    Continue Shopping
+                                </Button>
                             </div>
                         </div>
                     </div>
