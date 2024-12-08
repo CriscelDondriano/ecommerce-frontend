@@ -79,6 +79,7 @@ const Dashboard = ({
                         label={category}
                         checked={selectedCategories.includes(category)}
                         onChange={() => handleCategoryChange(category)}
+                        className="custom-checkbox"
                       />
                     </Col>
                   ))}
