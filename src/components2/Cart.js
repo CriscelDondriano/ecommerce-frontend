@@ -134,7 +134,7 @@ const Cart = () => {
                 </div>
             ) : (
                 <>
-                    <div className="mb-3">
+                    <div className="d-flex align-items-center mb-3">
                         <Form.Check
                             type="checkbox"
                             label="Select All"
@@ -165,7 +165,7 @@ const Cart = () => {
                                         />
                                     </td>
                                     <td>{item.name}</td>
-                                    <td>₱{(item.price * item.quantity).toFixed(2)}</td> {/* Updated price based on quantity */}
+                                    <td>₱{item.price}</td>
                                     <td>
                                         {/* Quantity Selector with Buttons */}
                                         <div className="d-flex align-items-center">
@@ -202,18 +202,20 @@ const Cart = () => {
                         </tbody>
                     </Table>
 
-                    <div className="d-flex justify-content-between mt-4">
+                    <div className="d-flex justify-content-between mt-4"> 
                         <div>
-                            <h5>Total Items: {totalItems}</h5>
-                            <h5>Total Amount: ₱{totalAmount.toFixed(2)}</h5>
+                            <h6>Total Items: {totalItems}</h6>
+                            <h6>Grand Total: ₱{totalAmount.toFixed(2)}</h6>
                         </div>
                         <div>
+                        <div style={{ marginTop: '20px' }}> 
                             <Button variant="dark" onClick={handleCheckout} disabled={selectedItems.size === 0}>
                                 Checkout
                             </Button>
                             <Button variant="outline-dark" onClick={handleContinueShopping} className=" ms-2">
                                 Continue Shopping
                             </Button>
+                            </div>
                         </div>
                     </div>
                 </>
