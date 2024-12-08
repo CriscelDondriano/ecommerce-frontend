@@ -13,8 +13,14 @@ function LoginForm() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (localStorage.getItem('user-info')) {
-            navigate("/ProductManagement");
+        const userInfo = localStorage.getItem('user-info');
+        if (userInfo) {
+            const user = JSON.parse(userInfo);
+            if (user.role === 'admin') {
+                navigate('/ProductManagement');
+            } else {
+                navigate('/store');
+            }
         }
     }, [navigate]);
 
@@ -28,23 +34,23 @@ function LoginForm() {
             return;
         }
 
-        let item = { email, password };
+        let credentials = { email, password };
 
         try {
-            let result = await fetch("http://127.0.0.1:8000/api/login", {
+            let response = await fetch("http://127.0.0.1:8000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                body: JSON.stringify(item)
+                body: JSON.stringify(credentials)
             });
 
-            if (!result.ok) {
+            if (!response.ok) {
                 throw new Error('Login failed');
             }
 
-            result = await result.json();
+            const result = await response.json();
 
             if (result.error) {
                 setErrorMessage("INVALID CREDENTIALS. PLEASE TRY AGAIN");
@@ -52,10 +58,17 @@ function LoginForm() {
                 return;
             }
 
-            localStorage.setItem("user-info", JSON.stringify(result));
-            setLoading(false);
-            navigate("/ProductManagement");
+            // Store user info in localStorage
+            localStorage.setItem("user-info", JSON.stringify(result.user));
 
+            // Navigate based on the user's role
+            if (result.redirect) {
+                navigate(result.redirect);
+            } else {
+                setErrorMessage("Unexpected error occurred. Please try again.");
+            }
+
+            setLoading(false);
         } catch (error) {
             console.error("Login failed:", error);
             setErrorMessage("Invalid Input. Please try again.");
@@ -67,7 +80,7 @@ function LoginForm() {
         <Container className="d-flex flex-column justify-content-center align-items-center" style={{ height: '100vh' }}>
             <Card className="bg-light text-dark shadow-lg mx-auto" style={{ maxWidth: '600px', width: '100%', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
                 <FontAwesomeIcon className='mt-5' icon={faUserCircle} size='8x' />
-                <h1 className='text-center pt-5 font-weight-bold'>ADMIN LOGIN</h1>
+                <h1 className='text-center pt-5 font-weight-bold'>USER LOGIN</h1>
                 <Card.Body className='p-5'>
                     {loading ? (
                         <div className="d-flex justify-content-center">
@@ -95,14 +108,12 @@ function LoginForm() {
                                     />
                                 </InputGroup>
                             </Form.Group>
-
-                            <Form.Group controlId="formBasicPassword" className="mb-3">
+                            <Form.Group controlId="formBasicPassword" className="mt-3">
                                 <Form.Label className="font-weight-bold">Password</Form.Label>
                                 <InputGroup>
                                     <InputGroup.Text>
                                         <FontAwesomeIcon icon={faLock} />
                                     </InputGroup.Text>
-
                                     <Form.Control
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder='Enter Password'
@@ -124,6 +135,14 @@ function LoginForm() {
                                 disabled={!email || !password}
                             >
                                 Login
+                            </Button>
+                            <Button
+                                variant="outline-dark"
+                                type="button"
+                                onClick={() => navigate("/register")}
+                                className="w-100 mt-3"
+                            >
+                                Don't have an account? Register
                             </Button>
                         </Form>
                     )}

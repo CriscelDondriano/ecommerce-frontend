@@ -9,21 +9,20 @@ const UserPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [cartCount, setCartCount] = useState(0); // State to track the number of items in the cart
-    const [searchQuery, setSearchQuery] = useState(''); // State for search input
-    const [selectedCategories, setSelectedCategories] = useState([]); // State for selected categories
-    const [quantities, setQuantities] = useState({}); // State for tracking quantities per product
-    const navigate = useNavigate(); // Hook for navigation
+    const [cartCount, setCartCount] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [quantities, setQuantities] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/products'); // Adjust the API endpoint as needed
+                const response = await axios.get('http://localhost:8000/api/products');
                 setProducts(response.data);
-                // Initialize quantities for each product
                 const initialQuantities = {};
                 response.data.forEach((product) => {
-                    initialQuantities[product.id] = 1; // Default quantity is 1
+                    initialQuantities[product.id] = 1;
                 });
                 setQuantities(initialQuantities);
             } catch (err) {
@@ -35,12 +34,17 @@ const UserPage = () => {
         };
 
         fetchProducts();
-        updateCartCount(); // Update cart count on component mount
+        updateCartCount();
     }, []);
 
     const updateCartCount = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCartCount(storedCart.length); // Set the cart count based on local storage
+        setCartCount(storedCart.length);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('user-info'); // Clear user session
+        navigate('/'); // Redirect to login page
     };
 
     const handleAddToCart = (product) => {
@@ -106,13 +110,18 @@ const UserPage = () => {
         return <p style={{ color: 'red' }}>{error}</p>;
     }
 
-    // Assuming categories are predefined
     const categories = ['Mobile', 'TV & AV', 'Laptop', 'Home Appliances', 'Accessories'];
 
     return (
         <Container>
-            <h1 className="text-center mt-4">Welcome to Our Store</h1> {/* Centered Welcome Message */}
-            <h1 className="mt-4">Product List</h1>
+            {/* Logout Button */}
+            <div className="d-flex justify-content-between align-items-center mt-4">
+                <h1>Welcome to Our Store</h1>
+                <Button variant="dark" onClick={handleLogout}>
+                    Logout
+                </Button>
+            </div>
+
             <div className="d-flex justify-content-end mb-4">
                 <Button variant="primary" onClick={() => navigate('/cart')} className="position-relative">
                     <FontAwesomeIcon icon={faShoppingCart} />
@@ -124,7 +133,6 @@ const UserPage = () => {
                 </Button>
             </div>
 
-            {/* Search Bar */}
             <Form className="mb-4">
                 <Form.Control
                     type="text"
@@ -134,7 +142,6 @@ const UserPage = () => {
                 />
             </Form>
 
-            {/* Category Filters - Horizontal Checkboxes */}
             <div className="mb-4">
                 <Row className="d-flex justify-content-start" style={{ flexWrap: 'nowrap' }}>
                     {categories.map((category) => (
@@ -156,6 +163,7 @@ const UserPage = () => {
                         <Col key={product.id} md={4} className="mb-4">
                             <Card>
                                 <Link to={`/products/${product.id}`}>
+                                    <Card.Img variant="top" src={product.image} />
                                     <Card.Img variant="top" src={product.image} />
                                 </Link>
                                 <Card.Body>
