@@ -198,7 +198,7 @@ const Register = () => {
               {isSubmitting ? "Registering..." : "Register"}
             </Button>
 
-            <Link to="/" className="btn btn-outline-dark w-100">
+            <Link to="/login" className="btn btn-outline-dark w-100">
               Already have an account? Login
             </Link>
           </Form>

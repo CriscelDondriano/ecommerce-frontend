@@ -20,13 +20,6 @@ const UserPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const authToken = localStorage.getItem('authToken');
-        if (!authToken) {
-            navigate("/", { replace: true }); // Redirect to login page if not authenticated
-        }
-    }, [navigate]); // We add navigate to dependency array to ensure it is re-run if the navigate function changes.
-    
-    useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/api/products');
@@ -48,13 +41,6 @@ const UserPage = () => {
         updateCartCount();
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('authToken'); // Clear user session
-        navigate("/", { replace: true }); // Redirect to login page
-    };
-    
-    
-    
     const updateCartCount = () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartCount(storedCart.length);
@@ -118,6 +104,8 @@ const UserPage = () => {
         return matchesSearch && matchesCategory;
     });
 
+
+    
     if (loading) {
         return <p>Loading products...</p>;
     }
@@ -140,10 +128,7 @@ const UserPage = () => {
                         </Badge>
                     )}
                 </Button>
-                <Button variant="dark" onClick={handleLogout} className="ms-2">
-                Logout
-            </Button>
-
+                
             </div>
 
             <Form className="mb-4">

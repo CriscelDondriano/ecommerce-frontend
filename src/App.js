@@ -12,7 +12,7 @@ import ReceiptPage from './components2/ReceiptPage';
 const App = () => {
     return (
         <Routes> {/* Define the routing for the application */}
-            <Route path="/" element={<LoginForm />} /> {/* Route for the home path, renders the LoginForm component */}
+            <Route path="/login" element={<LoginForm />} /> {/* Route for the home path, renders the LoginForm component */}
             <Route path="/register" element={<Register />} />
             <Route path="/ProductManagement" element={<ProductManagement />} /> {/* Route for Product Management, renders the ProductManagement component */}
             <Route path="/store" element={<Userpage />} />

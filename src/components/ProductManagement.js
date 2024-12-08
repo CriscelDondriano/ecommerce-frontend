@@ -127,7 +127,7 @@ const ProductManagement = () => {
         localStorage.removeItem("user-info");
 
         // Navigate to the login page with replace to prevent going back
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
 
         // Optionally prevent going back to the previous page
         window.history.pushState(null, "", window.location.href);
