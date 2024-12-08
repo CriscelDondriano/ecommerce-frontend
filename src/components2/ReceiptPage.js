@@ -48,12 +48,12 @@ const ReceiptPage = () => {
         <Container className="mt-5">
             <Card>
                 <Card.Body>
-                    <h5 className="mb-4">Order Receipt</h5>
+                    <h2 className="mb-4 text-center">Checkout Details</h2> 
                     <p>
                         <strong>Name:</strong> {shippingDetails.name || 'N/A'}
                     </p>
                     <p>
-                        <strong>Phone:</strong> {shippingDetails.phoneNumber || 'N/A'}
+                        <strong>Contact No.#:</strong> {shippingDetails.phoneNumber || 'N/A'}
                     </p>
                     <p>
                         <strong>Address:</strong>{' '}
@@ -65,7 +65,7 @@ const ReceiptPage = () => {
                         <strong>Payment Method:</strong> {paymentMethod}
                     </p>
                     <hr />
-                    <h5>Items:</h5>
+                    <h5>Order Summary :</h5>
                     <ul className="list-unstyled">
                         {cartItems.map((item) => (
                             <li
@@ -80,10 +80,10 @@ const ReceiptPage = () => {
                         ))}
                     </ul>
                     <hr />
-                    <h6 className="text-right">
-                        Total: ₱{totalPrice.toFixed(2)}
-                    </h6>
-                    <div className="d-flex justify-content-between mt-3">
+                    <h5 className="text-right">
+                        Total Amount: ₱{totalPrice.toFixed(2)}
+                    </h5>
+                    <div className="d-flex justify-content-between mt-4">
                         <Button variant="dark" onClick={handleConfirm}>
                             Confirm
                         </Button>
