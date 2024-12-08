@@ -91,7 +91,7 @@ const Register = () => {
         });
 
         console.log("Registration successful:", response.data);
-        navigate("/");
+        navigate("/login");
       } catch (error) {
         if (error.response && error.response.data.errors) {
           setErrors(error.response.data.errors);
