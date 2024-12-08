@@ -173,20 +173,20 @@ const UserPage = () => {
             </Form>
 
             <div className="mb-4">
-    <Row className="d-flex justify-content-start" style={{ flexWrap: 'nowrap' }}>
-        {categories.map((category) => (
-            <Col key={category} xs="auto" className="mb-2">
-                <Form.Check
-                    type="checkbox"
-                    label={category}
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
-                    className="custom-checkbox" // Apply the custom styling class
-                />
-            </Col>
-        ))}
-    </Row>
-</div>
+                <Row className="d-flex justify-content-start" style={{ flexWrap: 'nowrap' }}>
+                    {categories.map((category) => (
+                        <Col key={category} xs="auto" className="mb-2">
+                            <Form.Check
+                                type="checkbox"
+                                label={category}
+                                checked={selectedCategories.includes(category)}
+                                onChange={() => handleCategoryChange(category)}
+                                className="custom-checkbox" // Apply the custom styling class
+                            />
+                        </Col>
+                    ))}
+                </Row>
+            </div>
 
 
             <Row>
