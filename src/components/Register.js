@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Form, Button, Container, Card, Alert, InputGroup } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +15,6 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,10 +26,15 @@ const Register = () => {
     const hasNumbers = /\d/.test(password); // Checks for numbers
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password); // Checks for special characters
     const minLength = 8; // Minimum password length for strong password
-
+  
     if (password.length < minLength) {
       setPasswordStrength("Weak");
-    } else if (hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar) {
+    } else if (
+      hasUpperCase &&
+      hasLowerCase &&
+      hasNumbers &&
+      hasSpecialChar
+    ) {
       setPasswordStrength("Strong");
     } else if (password.length >= minLength) {
       setPasswordStrength("Medium");
@@ -91,7 +92,7 @@ const Register = () => {
         });
 
         console.log("Registration successful:", response.data);
-        navigate("/login");
+        navigate("/");
       } catch (error) {
         if (error.response && error.response.data.errors) {
           setErrors(error.response.data.errors);
@@ -146,25 +147,22 @@ const Register = () => {
 
             <Form.Group className="mb-3" controlId="formPassword">
               <Form.Label>Password</Form.Label>
-              <InputGroup>
-                <Form.Control
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    handleChange(e);
-                    validatePasswordStrength(e.target.value);
-                  }}
-                  isInvalid={!!errors.password}
-                />
-                <InputGroup.Text onClick={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}>
-                  <FontAwesomeIcon icon={!showPassword ? faEyeSlash : faEye} />
-                </InputGroup.Text>
-                <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
-              </InputGroup>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => {
+                  handleChange(e);
+                  validatePasswordStrength(e.target.value);
+                }}
+                isInvalid={!!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
               {passwordStrength && (
-                <Form.Text className={`text-${passwordStrength === "Strong" ? "success" : passwordStrength === "Medium" ? "warning" : "danger"}`}>
+                <Form.Text
+                  className={`text-${passwordStrength === "Strong" ? "success" : passwordStrength === "Medium" ? "warning" : "danger"}`}
+                >
                   Password Strength: {passwordStrength}
                 </Form.Text>
               )}
@@ -172,20 +170,15 @@ const Register = () => {
 
             <Form.Group className="mb-3" controlId="formPasswordConfirmation">
               <Form.Label>Confirm Password</Form.Label>
-              <InputGroup>
-                <Form.Control
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="password_confirmation"
-                  placeholder="Confirm your password"
-                  value={formData.password_confirmation}
-                  onChange={handleChange}
-                  isInvalid={!!errors.password_confirmation}
-                />
-                <InputGroup.Text onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ cursor: 'pointer' }}>
-                  <FontAwesomeIcon icon={!showConfirmPassword ? faEyeSlash : faEye} />
-                </InputGroup.Text>
-                <Form.Control.Feedback type="invalid">{errors.password_confirmation}</Form.Control.Feedback>
-              </InputGroup>
+              <Form.Control
+                type="password"
+                name="password_confirmation"
+                placeholder="Confirm your password"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+                isInvalid={!!errors.password_confirmation}
+              />
+              <Form.Control.Feedback type="invalid">{errors.password_confirmation}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formContact">

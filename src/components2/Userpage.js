@@ -142,22 +142,11 @@ const cancelLogout = () => {
     return (
         <Container>
             <h1 className="text-center mt-4">Welcome to Our Store</h1>
+            <Button variant="outline-dark" onClick={logOut} className="mb-4">
+                Logout
+            </Button>
 
-            <div className="d-flex justify-content-end mb-4">
-                
-                <Button variant="dark" onClick={() => navigate('/cart')} className="position-relative me-3">
-                    <FontAwesomeIcon icon={faCartShopping} />
-                    {cartCount > 0 && (
-                        <Badge pill bg="danger" style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
-                            {cartCount}
-                        </Badge>
-                    )}
-                </Button>
-
-                <Button onClick={logOut} variant="dark">
-                    Logout
-                </Button>
-                <Modal show={showLogoutModal} onHide={cancelLogout}>
+            <Modal show={showLogoutModal} onHide={cancelLogout}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Logout</Modal.Title>
                 </Modal.Header>
@@ -171,6 +160,16 @@ const cancelLogout = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <div className="d-flex justify-content-end mb-4">
+                <Button variant="dark" onClick={() => navigate('/cart')} className="position-relative">
+                    <FontAwesomeIcon icon={faCartShopping} />
+                    {cartCount > 0 && (
+                        <Badge pill bg="danger" style={{ position: 'absolute', top: '-10px', right: '-10px' }}>
+                            {cartCount}
+                        </Badge>
+                    )}
+                </Button>
                 
             </div>
 
