@@ -204,7 +204,7 @@ const Register = () => {
             <Button variant="dark" type="submit" className="w-100 mb-3" disabled={isSubmitting}>
               {isSubmitting ? "Registering..." : "Register"}
             </Button>
-
+          
             <Link to="/login" className="btn btn-outline-dark w-100">
               Already have an account? Login
             </Link>

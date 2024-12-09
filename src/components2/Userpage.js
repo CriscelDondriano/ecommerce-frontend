@@ -55,7 +55,7 @@ const UserPage = () => {
     const confirmLogout = () => {
     localStorage.removeItem('user-info');
 
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
 
     window.history.pushState(null, '', window.location.href);
     window.onpopstate = function () {
